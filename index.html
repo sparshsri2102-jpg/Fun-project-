@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Chaos Clicker — Indie Hacker & 𝕏 Founder Edition</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #090b10;
+      --grid-dot: rgba(99, 102, 241, 0.16);
+      --card-bg: rgba(13, 18, 30, 0.9);
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+    }
+    html.light-theme {
+      --bg-color: #f8f9fa;
+      --grid-dot: rgba(15, 23, 42, 0.08);
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --text-main: #0f172a;
+      --text-sub: #475569;
+    }
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      transition: background-color 0.45s ease, filter 0.2s ease;
+    }
+    .bg-dot-grid {
+      background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .font-comic {
+      font-family: 'Comic Neue', cursive, sans-serif;
+    }
+
+    /* Main Click Button tactile 3D feel (Dark & Light adaptive) */
+    .chaos-btn {
+      box-shadow: 0 9px 0 #020617, 0 18px 40px rgba(56, 189, 248, 0.28);
+      transition: transform 0.06s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.06s ease, background-color 0.2s ease;
+    }
+    .chaos-btn:active, .chaos-btn.is-pressed {
+      transform: translateY(6px) scale(0.95);
+      box-shadow: 0 2px 0 #020617, 0 6px 16px rgba(56, 189, 248, 0.22);
+    }
+
+    /* Breaking News Marquee */
+    @keyframes marqueeScroll {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marqueeScroll 28s linear infinite;
+    }
+    .marquee-track:hover {
+      animation-play-state: paused;
+    }
+
+    /* Retro Windows 98 / Indie OS Popup Styling */
+    .retro-window {
+      background: #c0c0c0;
+      border-top: 2px solid #ffffff;
+      border-left: 2px solid #ffffff;
+      border-right: 2px solid #222222;
+      border-bottom: 2px solid #222222;
+      box-shadow: 5px 5px 0px rgba(0,0,0,0.5);
+    }
+    .retro-titlebar {
+      background: linear-gradient(90deg, #000080, #1084d0);
+      color: white;
+    }
+    .retro-btn {
+      background: #c0c0c0;
+      border-top: 2px solid #ffffff;
+      border-left: 2px solid #ffffff;
+      border-right: 2px solid #222222;
+      border-bottom: 2px solid #222222;
+    }
+    .retro-btn:active {
+      border-top: 2px solid #222222;
+      border-left: 2px solid #222222;
+      border-right: 2px solid #ffffff;
+      border-bottom: 2px solid #ffffff;
+    }
+
+    /* Glitch & Screen Shake for 200+ Chaos */
+    @keyframes screenShake {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      20% { transform: translate(-4px, 3px) rotate(-0.4deg); }
+      40% { transform: translate(4px, -3px) rotate(0.4deg); }
+      60% { transform: translate(-3px, -2px) rotate(-0.3deg); }
+      80% { transform: translate(3px, 4px) rotate(0.3deg); }
+    }
+    .glitch-shake {
+      animation: screenShake 0.22s infinite;
+    }
+    .chromatic-text {
+      text-shadow: -3px 0 #ff0055, 3px 0 #00e5ff;
+    }
+    @keyframes hueCycle {
+      0% { filter: hue-rotate(0deg) contrast(1.05); }
+      50% { filter: hue-rotate(30deg) contrast(1.14) saturate(1.25); }
+      100% { filter: hue-rotate(0deg) contrast(1.05); }
+    }
+    .overdrive-filter {
+      animation: hueCycle 4.5s infinite linear;
+    }
+
+    /* Floating +1 particles & Click Ripple Ring */
+    @keyframes floatUpFade {
+      0% { opacity: 1; transform: translateY(0) scale(0.9) rotate(var(--rot, 0deg)); }
+      100% { opacity: 0; transform: translateY(-82px) scale(1.25) rotate(var(--rot, 0deg)); }
+    }
+    .click-particle {
+      position: fixed;
+      pointer-events: none;
+      animation: floatUpFade 0.78s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      z-index: 65;
+    }
+    @keyframes rippleExpand {
+      0% { opacity: 0.9; transform: translate(-50%, -50%) scale(0.4); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.65); }
+    }
+    .click-ripple {
+      position: fixed;
+      width: 52px;
+      height: 52px;
+      border-radius: 9999px;
+      border: 3px solid #38bdf8;
+      pointer-events: none;
+      z-index: 64;
+      animation: rippleExpand 0.42s ease-out forwards;
+    }
+
+    /* Subtle pulse for newly unlocked badge */
+    @keyframes popIn {
+      0% { transform: scale(0.6); opacity: 0; }
+      70% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .pop-in {
+      animation: popIn 0.26s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* Floating drift animation for Infinite X/Indie cards */
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+    }
+    .infinite-card-float {
+      animation: gentleFloat 3.2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body id="app-body" class="relative w-full h-full overflow-hidden select-none bg-dot-grid flex flex-col">
+
+  <!-- ========================================================= -->
+  <!-- TOP MACBOOK / DESKTOP DARK-MODE CHROME BAR (Video Style!) -->
+  <!-- ========================================================= -->
+  <header id="macbook-chrome-bar" class="relative z-50 h-9 sm:h-11 bg-[#0f1420] border-b border-slate-800 px-3 sm:px-4 flex items-center justify-between text-xs text-slate-300 shrink-0 shadow-md">
+    <!-- Left: macOS Traffic Lights + Active Tab -->
+    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+      <div class="flex items-center gap-1.5 shrink-0">
+        <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f56] inline-block"></span>
+        <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ffbd2e] inline-block"></span>
+        <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27c93f] inline-block"></span>
+      </div>
+      <div class="bg-slate-800/90 text-slate-100 font-bold px-2.5 py-1 rounded-t-lg text-[11px] sm:text-xs flex items-center gap-1.5 truncate border-t border-x border-slate-700/60">
+        <span>🌀</span>
+        <span class="truncate">Chaos Clicker — Indie Hacker & 𝕏 Edition</span>
+      </div>
+    </div>
+
+    <!-- Center: Fake URL Bar (Visible on tablet/MacBook/desktop) -->
+    <div class="hidden md:flex items-center gap-1.5 bg-[#090d16] border border-slate-700/80 rounded-md px-4 py-1 font-mono-code text-[11px] text-slate-400">
+      <span class="text-emerald-400">🔒</span>
+      <span class="text-slate-200">chaos-clicker.ai</span>
+      <span id="url-theme-param" class="text-slate-500">/indie-founder-x?theme=dark</span>
+    </div>
+
+    <!-- Right: REC • DARK MODE Indicator & Live Chaos Badge -->
+    <div class="flex items-center gap-2 font-mono-code shrink-0">
+      <div class="flex items-center gap-1.5 bg-red-500/15 border border-red-500/80 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold text-red-300">
+        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+        <span id="chrome-mode-label">REC • DARK MODE</span>
+      </div>
+      <span id="chrome-chaos-readout" class="hidden sm:inline text-sky-400 font-bold text-xs">CHAOS: 0</span>
+    </div>
+  </header>
+
+  <!-- ========================================================= -->
+  <!-- MAIN VIEWPORT ARENA                                       -->
+  <!-- ========================================================= -->
+  <div id="viewport-arena" class="relative flex-1 w-full overflow-hidden">
+
+    <!-- LAYER 1: RAIN & PAGERDUTY LIGHTNING (Unlocks at 50 Chaos) -->
+    <canvas id="rain-canvas" class="fixed inset-0 pointer-events-none z-10 hidden"></canvas>
+    <div id="lightning-flash" class="fixed inset-0 bg-white pointer-events-none z-10 opacity-0 transition-opacity duration-150"></div>
+
+    <!-- LAYER 2: BOUNCING ELEMENTS ARENA (5 Chaos & 150 Chaos) -->
+    <div id="bouncers-layer" class="absolute inset-0 pointer-events-none z-20 overflow-hidden"></div>
+
+    <!-- LAYER 2.5: INFINITE INDIE HACKER / X CHAOS LAYER ARENA -->
+    <div id="infinite-chaos-layer" class="absolute inset-0 pointer-events-none z-25 overflow-hidden"></div>
+
+    <!-- LAYER 3: GLITCH TEXT OVERLAYS (Unlocks at 200+ Chaos) -->
+    <div id="glitch-layer" class="absolute inset-0 pointer-events-none z-25 overflow-hidden"></div>
+
+    <!-- LAYER 4: INDIE HACKER / X BREAKING NEWS TICKER (15 Chaos) -->
+    <div id="news-ticker" class="absolute top-0 left-0 right-0 z-40 hidden shadow-md">
+      <div class="flex items-center bg-red-600 text-white border-b-2 border-yellow-300 h-8 sm:h-9 overflow-hidden">
+        <div class="flex items-center gap-1.5 bg-yellow-400 text-black font-black text-[11px] sm:text-xs px-2.5 sm:px-3 h-full shrink-0 tracking-wider uppercase border-r-2 border-black z-10">
+          <span class="inline-block w-2 h-2 rounded-full bg-red-600 animate-ping"></span>
+          <span>BREAKING ON 𝕏</span>
+        </div>
+        <div class="overflow-hidden flex-1 relative h-full flex items-center bg-zinc-950 text-yellow-300 font-mono-code text-[11px] sm:text-xs font-bold">
+          <div id="marquee-content" class="marquee-track whitespace-nowrap">
+            <span class="mx-6">🚨 BREAKING: SOLO FOUNDER SHIPS 14 AI WRAPPERS BEFORE BREAKFAST FROM BALI CO-WORKING SPACE</span>
+            <span class="mx-6">📈 STRIPE SCREENSHOTS UP 9,420% ON 𝕏 DESPITE $0 ACTUAL VERIFIED REVENUE</span>
+            <span class="mx-6">🦀 SHOW HN: I REWROTE MY ENTIRE SAAS IN RUST AT 3AM AND LOST BOTH OF MY USERS</span>
+            <span class="mx-6">💸 AWS BILL ALERT: DEV FORGOT TO DELETE NAT GATEWAY, NOW OWES JEFF BEZOS $84,000</span>
+            <span class="mx-6">🧵 VIRAL THREAD: "How I went from -$40k MRR to $100k MRR in 4 days with 1 weird Cursor prompt (1/58)"</span>
+            <span class="mx-6">🚀 PRODUCT HUNT #1: "AI To-Do List That Roasts Your Commit Messages" RAISES $12M SEED ROUND</span>
+            <span class="mx-6">🚨 BREAKING: SOLO FOUNDER SHIPS 14 AI WRAPPERS BEFORE BREAKFAST FROM BALI CO-WORKING SPACE</span>
+            <span class="mx-6">📈 STRIPE SCREENSHOTS UP 9,420% ON 𝕏 DESPITE $0 ACTUAL VERIFIED REVENUE</span>
+          </div>
+        </div>
+      </div>
+      <!-- Secondary Indie Hacker Metrics Sub-ticker (appears at 125+ chaos) -->
+      <div id="stock-subticker" class="hidden bg-black/95 text-emerald-400 font-mono-code text-[10px] sm:text-[11px] py-1 px-3 border-b border-zinc-700 flex items-center justify-between overflow-hidden">
+        <div class="flex items-center gap-3 sm:gap-4 whitespace-nowrap animate-pulse overflow-x-auto">
+          <span>$MRR <b id="live-mrr-ticker" class="text-emerald-300">$42,069/mo ▲</b></span>
+          <span>$CHURN <b class="text-red-400">94.8% ▼</b></span>
+          <span class="hidden xs:inline">$AWS_BILL <b id="live-aws-ticker" class="text-red-400">$14,290 ▲</b></span>
+          <span class="hidden sm:inline">DOMAINS BOUGHT: <b id="live-domains-ticker" class="text-sky-300">147 (0 Shipped)</b></span>
+          <span class="hidden md:inline">INFINITE LAYER: <b id="live-layer-ticker" class="text-amber-300">#1</b></span>
+        </div>
+        <span id="corner-hit-counter" class="text-yellow-300 font-bold shrink-0 ml-2">DVD Corner Hits: 0</span>
+      </div>
+    </div>
+
+    <!-- LAYER 5: RANDOM RETRO POPUPS CONTAINER (75 Chaos) -->
+    <div id="popups-layer" class="absolute inset-0 pointer-events-none z-30 overflow-hidden"></div>
+
+    <!-- LAYER 6: 3AM SHIPPING LOFI / RAVE PLAYER (100 Chaos) -->
+    <div id="music-widget" class="absolute top-11 left-2 sm:top-14 sm:left-4 z-40 hidden w-48 sm:w-60 retro-window p-1.5 sm:p-2 pointer-events-auto pop-in">
+      <div class="retro-titlebar px-2 py-1 flex items-center justify-between text-[11px] font-bold mb-1.5">
+        <div class="flex items-center gap-1 truncate">
+          <span>🎵</span>
+          <span id="music-title-label" class="truncate">3am_vibe_coding_lofi.wav</span>
+        </div>
+        <span class="bg-emerald-400 text-black px-1 text-[9px] font-mono-code font-extrabold">SHIP</span>
+      </div>
+      <div class="bg-black p-1.5 border border-zinc-600 mb-1.5">
+        <canvas id="audio-viz-canvas" width="220" height="38" class="w-full h-8 sm:h-9 block"></canvas>
+        <div class="flex items-center justify-between text-[9px] sm:text-[10px] font-mono-code text-emerald-400 mt-1">
+          <span id="music-genre-tag">3AM DEEP WORK LOFI</span>
+          <span id="music-bpm-tag">82 BPM</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-1">
+        <button id="btn-toggle-music" type="button" class="retro-btn flex-1 py-1 px-1.5 text-[11px] font-bold text-black flex items-center justify-center gap-1 active:translate-y-px">
+          <span id="music-play-icon">⏸</span>
+          <span id="music-play-text">Mute Beats</span>
+        </button>
+        <button id="btn-switch-genre" type="button" class="retro-btn py-1 px-2 text-[11px] font-bold text-black active:translate-y-px" title="Switch Music Mode">
+          🔀 Mode
+        </button>
+      </div>
+    </div>
+
+    <!-- LAYER 7: BUILD IN PUBLIC 𝕏 TIMELINE CHAT (125 Chaos) -->
+    <div id="stream-chat-widget" class="absolute bottom-14 left-2 sm:bottom-16 sm:left-4 z-30 hidden w-48 sm:w-64 bg-zinc-950/90 backdrop-blur-sm border-2 border-sky-500 rounded-xl p-2 text-white shadow-xl pointer-events-auto pop-in">
+      <div class="flex items-center justify-between border-b border-white/15 pb-1 mb-1 text-[11px] font-bold">
+        <span class="flex items-center gap-1.5 text-sky-400">
+          <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
+          𝕏 TECH TIMELINE LIVE
+        </span>
+        <span id="viewer-count" class="text-[10px] font-mono-code text-zinc-300">📊 14.2K impr</span>
+      </div>
+      <div id="chat-messages" class="h-20 sm:h-32 overflow-y-auto space-y-1 text-[10px] sm:text-[11px] leading-tight pr-1 font-sans"></div>
+    </div>
+
+    <!-- LAYER 8: SUBWAY SURFERS / GITHUB GREEN SQUARES (30 Chaos) -->
+    <div id="subway-widget" class="absolute bottom-14 right-2 sm:bottom-16 sm:right-4 z-40 hidden w-36 sm:w-52 bg-zinc-900 border-2 sm:border-4 border-yellow-400 rounded-2xl shadow-2xl overflow-hidden pointer-events-auto pop-in">
+      <div class="bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-500 text-black px-2 py-1 flex items-center justify-between text-[10px] sm:text-[11px] font-black uppercase tracking-tight">
+        <span id="runner-channel-title" class="truncate">🏃 Subway Brainrot</span>
+        <button id="btn-switch-channel" type="button" class="bg-black text-yellow-300 px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-mono-code hover:bg-zinc-800 active:scale-95" title="Switch Founder Dopamine Channel">
+          📺 CH+
+        </button>
+      </div>
+      <div class="relative w-full h-44 sm:h-64 bg-sky-900">
+        <canvas id="subway-canvas" width="208" height="260" class="w-full h-full block"></canvas>
+        <div class="absolute top-1.5 left-1.5 bg-black/80 text-emerald-300 font-mono-code text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded border border-emerald-400/30">
+          <span id="runner-overlay-stat">MRR: $0</span>
+        </div>
+        <div class="absolute bottom-1.5 left-0 right-0 text-center pointer-events-none">
+          <span class="bg-black/85 text-yellow-300 font-black text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wider border border-yellow-400/50">
+            SHIP FAST • DO NOT BLINK
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAYER 8.5: INFINITE CHAOS LOG WIDGET (Top-Right) -->
+    <div id="infinite-hud" class="absolute top-11 right-2 sm:top-14 sm:right-4 z-40 hidden w-48 sm:w-64 bg-slate-950/90 backdrop-blur-md text-white border-2 border-indigo-500 rounded-xl p-2 shadow-2xl pointer-events-auto pop-in">
+      <div class="flex items-center justify-between border-b border-white/15 pb-1 mb-1">
+        <div class="flex items-center gap-1">
+          <span class="text-xs">♾️</span>
+          <span class="text-[10px] sm:text-[11px] font-black tracking-wider uppercase text-indigo-300 truncate">Infinite Layers</span>
+        </div>
+        <span id="infinite-layer-badge" class="bg-indigo-600 text-white font-mono-code text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded">LVL 1</span>
+      </div>
+      <div id="infinite-feed-list" class="space-y-1 max-h-16 sm:max-h-24 overflow-y-auto text-[9px] sm:text-[10px] font-mono-code pr-1"></div>
+      <button id="btn-spawn-infinite-now" type="button" class="mt-1.5 w-full py-1 px-2 rounded-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-95 active:scale-95 text-white font-bold text-[10px] sm:text-[11px] flex items-center justify-center gap-1 shadow">
+        <span>⚡</span>
+        <span>Ship Next Chaos Layer (+20)</span>
+      </button>
+    </div>
+
+    <!-- LAYER 9: ACHIEVEMENT TOAST BANNER -->
+    <div id="achievement-toast" class="absolute top-10 sm:top-12 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 -translate-y-4 max-w-[92vw]">
+      <div class="bg-zinc-950 text-white border-2 border-amber-400 rounded-full px-3.5 sm:px-4 py-1.5 sm:py-2 shadow-2xl flex items-center gap-2.5">
+        <span id="toast-icon" class="text-lg sm:text-xl">🏆</span>
+        <div class="text-left min-w-0">
+          <div id="toast-label" class="text-[9px] sm:text-[10px] uppercase tracking-widest text-amber-400 font-extrabold">CHAOS UNLOCKED</div>
+          <div id="toast-title" class="text-xs sm:text-sm font-bold truncate">Bouncing DVD Screensaver</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAYER 10: CENTER STAGE — ALWAYS VISIBLE CLICK ME BUTTON -->
+    <main class="relative z-40 w-full h-full flex flex-col items-center justify-center px-3 pointer-events-none">
+      <div id="center-card" class="pointer-events-auto flex flex-col items-center text-center max-w-sm sm:max-w-md w-full p-4 sm:p-7 rounded-3xl transition-all duration-300 bg-[#0d121e]/85 border border-indigo-500/30 shadow-2xl backdrop-blur-md">
+        
+        <!-- Rank / Status Pill -->
+        <div id="status-badge" class="opacity-0 transition-opacity duration-300 mb-2.5 sm:mb-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-950/90 text-emerald-300 border border-emerald-500/40 backdrop-blur text-[11px] sm:text-xs font-mono-code font-bold tracking-wide shadow-sm">
+          <span id="status-emoji">🌱</span>
+          <span id="status-text" class="truncate max-w-[240px] sm:max-w-xs">Level 0: Localhost:3000 Enjoyer</span>
+        </div>
+
+        <!-- THE BIG "CLICK ME" BUTTON (Video Dark Mode Style!) -->
+        <button
+          id="main-click-btn"
+          type="button"
+          class="chaos-btn relative group bg-gradient-to-b from-slate-800 to-slate-950 hover:from-slate-700 hover:to-slate-900 text-white font-black text-2xl sm:text-4xl px-9 py-5 sm:px-14 sm:py-7 rounded-2xl border-4 border-sky-400 cursor-pointer select-none active:outline-none focus:outline-none"
+        >
+          <span id="main-btn-label" class="block tracking-tight">Click me</span>
+          <span id="main-btn-sub" class="block text-[10px] sm:text-xs font-mono-code font-normal text-slate-300 mt-1 opacity-90">
+            (nothing bad will happen)
+          </span>
+        </button>
+
+        <!-- BIG CHAOS COUNTER -->
+        <div class="mt-4 sm:mt-5 flex flex-col items-center w-full">
+          <div id="chaos-counter-wrap" class="transition-transform duration-75 flex items-baseline justify-center">
+            <span id="chaos-count" class="font-mono-code font-black text-4xl sm:text-6xl text-white tracking-tight">0</span>
+            <span id="chaos-unit" class="font-mono-code font-bold text-xl sm:text-3xl text-slate-400 ml-2">chaos</span>
+          </div>
+
+          <!-- Live Indie Hacker Sub-stats -->
+          <div id="indie-metrics-pill" class="opacity-0 transition-opacity duration-300 mt-1.5 flex items-center justify-center flex-wrap gap-2 sm:gap-3 text-[10px] sm:text-xs font-mono-code font-bold">
+            <span id="metric-mrr" class="text-emerald-400">$0 MRR</span>
+            <span class="text-slate-600">•</span>
+            <span id="metric-followers" class="text-sky-400">0 𝕏 Impr</span>
+            <span class="text-slate-600">•</span>
+            <span id="metric-wrappers" class="text-purple-400">0 ∞ Layers</span>
+          </div>
+
+          <!-- Next Unlock Progress Bar -->
+          <div id="progress-container" class="opacity-0 transition-opacity duration-300 mt-2.5 w-full max-w-[260px] sm:max-w-[300px]">
+            <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700 p-0.5">
+              <div id="progress-bar" class="h-full bg-gradient-to-r from-indigo-500 via-pink-500 to-amber-500 rounded-full transition-all duration-150" style="width: 0%"></div>
+            </div>
+            <p id="next-unlock-hint" class="text-[10px] sm:text-[11px] font-mono-code text-slate-400 mt-1.5 font-medium truncate">
+              Next unlock at 5 chaos...
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- LAYER 11: BOTTOM CONTROL BAR (All-Device Responsive Dock) -->
+    <footer class="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-50 w-auto max-w-[98vw]">
+      <div class="flex items-center gap-1 sm:gap-2 bg-slate-900/95 text-slate-200 backdrop-blur-md border border-slate-700 shadow-2xl rounded-full px-2.5 sm:px-3.5 py-1.5 text-[11px] sm:text-xs font-semibold overflow-x-auto">
+        <button id="btn-sound" type="button" class="px-2 py-1 rounded-full hover:bg-slate-800 active:scale-95 transition flex items-center gap-1 whitespace-nowrap" title="Toggle Sound Effects & Music">
+          <span id="sound-icon">🔊</span>
+          <span class="hidden sm:inline" id="sound-label">Sound ON</span>
+        </button>
+
+        <div class="h-3.5 w-px bg-slate-700 shrink-0"></div>
+
+        <button id="btn-autoclick" type="button" class="px-2 py-1 rounded-full hover:bg-amber-500/20 text-amber-300 border border-amber-500/40 bg-amber-500/10 active:scale-95 transition flex items-center gap-1 whitespace-nowrap" title="Auto-clicker for effortless screen recording">
+          <span>⚡</span>
+          <span id="autoclick-label">Auto: OFF</span>
+        </button>
+
+        <div class="h-3.5 w-px bg-slate-700 shrink-0"></div>
+
+        <button id="btn-theme" type="button" class="px-2 py-1 rounded-full hover:bg-slate-800 active:scale-95 transition flex items-center gap-1 whitespace-nowrap" title="Switch Dark / Light Theme">
+          <span id="theme-icon">🌙</span>
+          <span id="theme-label" class="hidden md:inline">Dark</span>
+        </button>
+
+        <div class="h-3.5 w-px bg-slate-700 shrink-0"></div>
+
+        <button id="btn-unlocks-modal" type="button" class="px-2 py-1 rounded-full hover:bg-slate-800 active:scale-95 transition flex items-center gap-1 whitespace-nowrap">
+          <span>🏆</span>
+          <span id="unlocks-count-label">Unlocks (0/8)</span>
+        </button>
+
+        <div class="h-3.5 w-px bg-slate-700 shrink-0"></div>
+
+        <button id="btn-code-modal" type="button" class="px-2 py-1 rounded-full hover:bg-emerald-500/20 text-emerald-300 active:scale-95 transition flex items-center gap-1 whitespace-nowrap" title="Copy Code & GitHub Deploy Guide">
+          <span>💻</span>
+          <span>Code</span>
+        </button>
+
+        <div class="h-3.5 w-px bg-slate-700 shrink-0"></div>
+
+        <button id="btn-share" type="button" class="px-2 py-1 rounded-full hover:bg-indigo-500/20 text-indigo-300 active:scale-95 transition flex items-center gap-1 whitespace-nowrap">
+          <span>📤</span>
+          <span>Share</span>
+        </button>
+
+        <div class="h-3.5 w-px bg-slate-700 shrink-0"></div>
+
+        <button id="btn-reset" type="button" class="px-2 py-1 rounded-full hover:bg-rose-500/20 text-rose-400 active:scale-95 transition flex items-center gap-1 whitespace-nowrap">
+          <span>🔄</span>
+          <span>Reset</span>
+        </button>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- LAYER 12: UNLOCKS & INFINITE LAYERS ROADMAP MODAL         -->
+  <!-- ========================================================= -->
+  <div id="unlocks-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-slate-900 text-white border-2 border-indigo-500 rounded-2xl max-w-md w-full p-5 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+        <div>
+          <h2 class="text-lg font-black text-white">🚀 Indie Hacker Chaos Roadmap (∞)</h2>
+          <p class="text-xs text-slate-400">Core milestones + Infinite Founder Layers every +20 chaos</p>
+        </div>
+        <button id="btn-close-modal" type="button" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center font-bold text-slate-300">✕</button>
+      </div>
+      <div id="unlocks-list" class="space-y-2 max-h-80 overflow-y-auto pr-1 text-xs"></div>
+      <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
+        <button id="btn-boost-25" type="button" class="px-3 py-1.5 rounded-lg bg-amber-500/20 border border-amber-400 hover:bg-amber-500/30 text-amber-300 font-bold text-xs transition">
+          🚀 +25 Chaos Boost (Demo)
+        </button>
+        <button id="btn-close-modal-bottom" type="button" class="px-4 py-1.5 rounded-lg bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-500 transition">
+          Back to Clicking
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- LAYER 13: GET CODE & GITHUB DEPLOY MODAL                  -->
+  <!-- ========================================================= -->
+  <div id="code-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-slate-900 text-white border-2 border-emerald-500 rounded-2xl max-w-lg w-full p-5 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+        <div>
+          <h2 class="text-lg font-black text-emerald-400">💻 Full Web App Code & GitHub Deploy</h2>
+          <p class="text-xs text-slate-400">100% self-contained single-file HTML • Works on Phone, MacBook & Desktop</p>
+        </div>
+        <button id="btn-close-code-modal" type="button" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center font-bold text-slate-300">✕</button>
+      </div>
+      <div class="space-y-3 text-xs text-slate-300">
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-1.5">
+          <div class="font-bold text-white">📱 How to Publish to GitHub Pages / Vercel from your Phone:</div>
+          <ol class="list-decimal list-inside space-y-1 text-slate-400">
+            <li>Tap <b class="text-emerald-300">"Copy Full index.html Code"</b> below (or download the GitHub Repo ZIP from chat).</li>
+            <li>Go to <span class="font-mono-code text-sky-400">github.com/new</span> on your phone browser, create a public repo, and tap <b>"creating a new file"</b> named <span class="font-mono-code text-amber-300">index.html</span>.</li>
+            <li>Paste the code, commit, and enable <b>Settings → Pages → Deploy from main branch</b> (or import into Vercel in 1 click).</li>
+          </ol>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <button id="btn-copy-full-html" type="button" class="flex-1 py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-lg active:scale-95 transition">
+            <span>📋</span>
+            <span id="copy-html-btn-text">Copy Full index.html Code</span>
+          </button>
+          <button id="btn-close-code-bottom" type="button" class="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      // =====================================================
+      // 1. CORE MILESTONES & INFINITE FOUNDER LAYER ARCHETYPES
+      // =====================================================
+      const MILESTONES = [
+        { threshold: 5,   id: 'dvd',      icon: '📀', title: 'Bouncing DVD & $MRR Logo',   desc: 'Classic screensaver + Stripe MRR badge bouncing around' },
+        { threshold: 15,  id: 'news',     icon: '🐦', title: 'Breaking on 𝕏 News Ticker',  desc: '24/7 scrolling Indie Hacker, HN & AI Wrapper headlines' },
+        { threshold: 30,  id: 'subway',   icon: '🏃', title: 'Subway MRR Surfer + GitHub', desc: 'Dodging Churn Trains & committing green GitHub squares' },
+        { threshold: 50,  id: 'rain',     icon: '🌧️', title: 'Prod Outage Rain & PagerDuty', desc: 'Full-screen server tears & PagerDuty incident lightning' },
+        { threshold: 75,  id: 'popups',   icon: '🪟', title: 'Founder & Dev Alert Popups', desc: 'AWS $84k bills, Product Hunt DMs, Stripe refunds & Clippy' },
+        { threshold: 100, id: 'music',    icon: '🎧', title: '3AM Vibe-Coding Lofi Synth', desc: 'Procedural lofi hip-hop & rave beats to ship bugs to' },
+        { threshold: 150, id: 'swarm',    icon: '🦀', title: 'Tech Stack Holy War Swarm',  desc: 'Bouncing Rust crabs, 502 Bad Gateways & npm errors' },
+        { threshold: 200, id: 'glitch',   icon: '⚡', title: 'git push --force Overdrive', desc: 'Screen shake, chromatic shift & AI hallucination stamps' }
+      ];
+
+      const INFINITE_ARCHETYPES = [
+        {
+          type: 'x_thread',
+          icon: '🧵',
+          name: 'Viral 𝕏 Build-in-Public Thread',
+          author: '@levels_clone_ai',
+          handle: 'Verified Indie Nomad 🌴',
+          text: 'I built 19 micro-SaaS apps in a single weekend using only HTML, SQLite & 9 espressos. Now at $84,000 MRR with 0 employees. Here is my exact playbook 🧵👇',
+          likes: '42.8K',
+          reposts: '9.1K'
+        },
+        {
+          type: 'stripe_toast',
+          icon: '💸',
+          name: 'Live Stripe Webhook Spawner',
+          title: 'Stripe • Payment Succeeded',
+          sub: '+$49.00/mo — Pro AI Wrapper Plan (Customer Immediately Churned)'
+        },
+        {
+          type: 'npm_terminal',
+          icon: '📦',
+          name: 'Runaway npm install Black Hole',
+          cmd: 'npm i is-odd-ai-agent@latest --force',
+          detail: 'added 148,920 packages in 0.4s • node_modules: 64.2 GB'
+        },
+        {
+          type: 'ph_badge',
+          icon: '🐱',
+          name: 'Product Hunt #1 Launch Badge',
+          product: 'ChatGPT Wrapper #9,412',
+          tagline: 'Cursor for your cat’s litter box schedule'
+        },
+        {
+          type: 'aws_bill',
+          icon: '☁️',
+          name: 'Runaway Serverless AWS Bill',
+          service: 'us-east-1 Infinite Lambda Loop',
+          costPerSec: 142.50
+        },
+        {
+          type: 'github_heatmap',
+          icon: '🟩',
+          name: '365-Day Green Commit Heatmap',
+          caption: '14,892 contributions (99% fixing typo in README.md)'
+        },
+        {
+          type: 'cursor_ghost',
+          icon: '🤖',
+          name: 'Vibe-Coding Tab-Tab-Tab Ghost',
+          code: '// AI Suggestion: DROP TABLE users; -- increases speed by 100x'
+        },
+        {
+          type: 'yc_banner',
+          icon: '🟧',
+          name: 'Y Combinator S26 Term Sheet',
+          offer: '$500,000 for 7% • Must pivot to B2B AI Agents in 12 mins'
+        },
+        {
+          type: 'localhost_error',
+          icon: '💥',
+          name: 'Next.js Hydration Mismatch Overlay',
+          err: 'Hydration Error: Server rendered "$10K MRR" but Client rendered "$0.00"'
+        },
+        {
+          type: 'domain_hoarder',
+          icon: '🌐',
+          name: 'Porkbun / Namecheap 3AM Cart',
+          domain: 'vibe-coder-gpt-saas-pro.ai ($69.99/yr) — AUTO-RENEWED'
+        },
+        {
+          type: 'hn_frontpage',
+          icon: '📰',
+          name: 'Hacker News #1 Comment Flamewar',
+          title: 'Ask HN: Why don’t you just build this in a 4-line bash script? (842 comments)'
+        },
+        {
+          type: 'vc_pivot',
+          icon: '🦄',
+          name: 'Series A Deck Generator',
+          pitch: 'We are the Uber for Docker Containers on the Blockchain (Pre-Idea)'
+        }
+      ];
+
+      const SUBTITLES = [
+        { min: 0,   sub: '(nothing bad will happen)',                     rank: '🌱 Level 0: Localhost:3000 Enjoyer',       btnText: 'Click me' },
+        { min: 1,   sub: '(buying my 47th unused .ai domain)',            rank: '🌐 Level 1: Domain Name Hoarder',          btnText: 'Ship It 🚀' },
+        { min: 5,   sub: '(wait, is that my MRR bouncing around?)',       rank: '📀 Level 2: Building in Public on 𝕏',      btnText: 'Ship Faster' },
+        { min: 15,  sub: '(we just hit #1 on Hacker News & 𝕏!)',          rank: '🐦 Level 3: Shitposter-in-Chief',          btnText: 'Post Thread 🧵' },
+        { min: 30,  sub: '(coding while watching Subway Surfers)',        rank: '🏃 Level 4: Certified Vibe Coder',         btnText: 'Tab ⇥ Accept' },
+        { min: 50,  sub: '(PagerDuty is screaming, prod is raining)',     rank: '🌧️ Level 5: Friday 5PM Deployer',          btnText: 'git push -f' },
+        { min: 75,  sub: '(AWS support is calling about my $84k bill)',   rank: '🪟 Level 6: Serverless Burn Survivor',     btnText: 'Scale to 0' },
+        { min: 100, sub: '(3AM espresso + lofi beats unlocked)',          rank: '🎧 Level 7: Ramen Profitable DJ',          btnText: 'MORE MRR 💸' },
+        { min: 150, sub: '(rewriting everything in Rust mid-flight)',     rank: '🦀 Level 8: 100x Cracked Engineer',        btnText: 'SHIP TO PROD' },
+        { min: 200, sub: '(INFINITE CHAOS ENGINE ENGAGED — NEVER STOPS)', rank: '♾️ Level 99: CEO OF TERMINAL ONLINE',      btnText: 'ASCEND 𝕏 🌀' }
+      ];
+
+      let chaos = 0;
+      let isDarkMode = true;
+      let unlockedSet = new Set();
+      let infiniteLayersUnlocked = 0;
+      let infiniteHistory = [];
+      let nextInfiniteThreshold = 20;
+      let soundEnabled = true;
+      let musicPlaying = false;
+      let musicGenre = 'lofi';
+      let autoClickerInterval = null;
+      let dvdCornerHits = 0;
+      let simulatedMrr = 0;
+      let simulatedAwsBill = 12;
+
+      let bouncers = [];
+      let infiniteWidgets = [];
+      let rainDrops = [];
+      let rainSplashes = [];
+      let popupTimer = null;
+      let chatTimer = null;
+      let glitchTimer = null;
+      let musicStepTimer = null;
+      let activePopupsCount = 0;
+
+      let runnerChannel = 0;
+      let runnerCoins = 0;
+      let runnerTick = 0;
+      let runnerLane = 1;
+      let runnerObstacles = [];
+      let runnerCoinItems = [];
+      let soapCubes = [];
+
+      // DOM Elements
+      const appBody = document.getElementById('app-body');
+      const viewportArena = document.getElementById('viewport-arena');
+      const chromeChaosReadout = document.getElementById('chrome-chaos-readout');
+      const chromeModeLabel = document.getElementById('chrome-mode-label');
+      const urlThemeParam = document.getElementById('url-theme-param');
+      const centerCard = document.getElementById('center-card');
+      const mainBtn = document.getElementById('main-click-btn');
+      const mainBtnLabel = document.getElementById('main-btn-label');
+      const mainBtnSub = document.getElementById('main-btn-sub');
+      const chaosCountEl = document.getElementById('chaos-count');
+      const chaosCounterWrap = document.getElementById('chaos-counter-wrap');
+      const statusBadge = document.getElementById('status-badge');
+      const statusText = document.getElementById('status-text');
+      const indieMetricsPill = document.getElementById('indie-metrics-pill');
+      const metricMrr = document.getElementById('metric-mrr');
+      const metricFollowers = document.getElementById('metric-followers');
+      const metricWrappers = document.getElementById('metric-wrappers');
+      const progressContainer = document.getElementById('progress-container');
+      const progressBar = document.getElementById('progress-bar');
+      const nextUnlockHint = document.getElementById('next-unlock-hint');
+
+      const rainCanvas = document.getElementById('rain-canvas');
+      const rainCtx = rainCanvas.getContext('2d');
+      const lightningFlash = document.getElementById('lightning-flash');
+      const bouncersLayer = document.getElementById('bouncers-layer');
+      const infiniteChaosLayer = document.getElementById('infinite-chaos-layer');
+      const glitchLayer = document.getElementById('glitch-layer');
+      const newsTicker = document.getElementById('news-ticker');
+      const stockSubticker = document.getElementById('stock-subticker');
+      const liveMrrTicker = document.getElementById('live-mrr-ticker');
+      const liveAwsTicker = document.getElementById('live-aws-ticker');
+      const liveDomainsTicker = document.getElementById('live-domains-ticker');
+      const liveLayerTicker = document.getElementById('live-layer-ticker');
+      const cornerHitCounter = document.getElementById('corner-hit-counter');
+      const popupsLayer = document.getElementById('popups-layer');
+
+      const musicWidget = document.getElementById('music-widget');
+      const audioVizCanvas = document.getElementById('audio-viz-canvas');
+      const audioVizCtx = audioVizCanvas.getContext('2d');
+      const btnToggleMusic = document.getElementById('btn-toggle-music');
+      const musicPlayIcon = document.getElementById('music-play-icon');
+      const musicPlayText = document.getElementById('music-play-text');
+      const btnSwitchGenre = document.getElementById('btn-switch-genre');
+      const musicTitleLabel = document.getElementById('music-title-label');
+      const musicGenreTag = document.getElementById('music-genre-tag');
+      const musicBpmTag = document.getElementById('music-bpm-tag');
+
+      const streamChatWidget = document.getElementById('stream-chat-widget');
+      const chatMessagesEl = document.getElementById('chat-messages');
+      const viewerCountEl = document.getElementById('viewer-count');
+
+      const subwayWidget = document.getElementById('subway-widget');
+      const subwayCanvas = document.getElementById('subway-canvas');
+      const subwayCtx = subwayCanvas.getContext('2d');
+      const btnSwitchChannel = document.getElementById('btn-switch-channel');
+      const runnerChannelTitle = document.getElementById('runner-channel-title');
+      const runnerOverlayStat = document.getElementById('runner-overlay-stat');
+
+      const infiniteHud = document.getElementById('infinite-hud');
+      const infiniteLayerBadge = document.getElementById('infinite-layer-badge');
+      const infiniteFeedList = document.getElementById('infinite-feed-list');
+      const btnSpawnInfiniteNow = document.getElementById('btn-spawn-infinite-now');
+
+      const achievementToast = document.getElementById('achievement-toast');
+      const toastIcon = document.getElementById('toast-icon');
+      const toastLabel = document.getElementById('toast-label');
+      const toastTitle = document.getElementById('toast-title');
+
+      const btnSound = document.getElementById('btn-sound');
+      const soundIcon = document.getElementById('sound-icon');
+      const soundLabel = document.getElementById('sound-label');
+      const btnAutoclick = document.getElementById('btn-autoclick');
+      const autoclickLabel = document.getElementById('autoclick-label');
+      const btnTheme = document.getElementById('btn-theme');
+      const themeIcon = document.getElementById('theme-icon');
+      const themeLabel = document.getElementById('theme-label');
+      const btnUnlocksModal = document.getElementById('btn-unlocks-modal');
+      const unlocksCountLabel = document.getElementById('unlocks-count-label');
+      const btnCodeModal = document.getElementById('btn-code-modal');
+      const btnShare = document.getElementById('btn-share');
+      const btnReset = document.getElementById('btn-reset');
+
+      const unlocksModal = document.getElementById('unlocks-modal');
+      const unlocksList = document.getElementById('unlocks-list');
+      const btnCloseModal = document.getElementById('btn-close-modal');
+      const btnCloseModalBottom = document.getElementById('btn-close-modal-bottom');
+      const btnBoost25 = document.getElementById('btn-boost-25');
+
+      const codeModal = document.getElementById('code-modal');
+      const btnCloseCodeModal = document.getElementById('btn-close-code-modal');
+      const btnCloseCodeBottom = document.getElementById('btn-close-code-bottom');
+      const btnCopyFullHtml = document.getElementById('btn-copy-full-html');
+      const copyHtmlBtnText = document.getElementById('copy-html-btn-text');
+
+      // =====================================================
+      // 2. WEB AUDIO SYNTHESIZER (SFX + 3AM LOFI / RAVE)
+      // =====================================================
+      let audioCtx = null;
+      let musicStep = 0;
+
+      function ensureAudio() {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            audioCtx = new AudioContextClass();
+          }
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }
+
+      function playClickSfx() {
+        if (!soundEnabled) return;
+        ensureAudio();
+        if (!audioCtx) return;
+
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const baseFreq = 260 + Math.min(chaos * 1.5, 580) + (Math.random() * 40 - 20);
+        osc.type = chaos >= 200 ? 'sawtooth' : 'triangle';
+        osc.frequency.setValueAtTime(baseFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.45, now + 0.065);
+
+        gain.gain.setValueAtTime(0.11, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.075);
+      }
+
+      function playUnlockFanfare() {
+        if (!soundEnabled) return;
+        ensureAudio();
+        if (!audioCtx) return;
+
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((freq, idx) => {
+          const now = audioCtx.currentTime + idx * 0.065;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.13, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        });
+      }
+
+      function playPopupBlip() {
+        if (!soundEnabled) return;
+        ensureAudio();
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(920, now);
+        osc.frequency.setValueAtTime(480, now + 0.04);
+        gain.gain.setValueAtTime(0.055, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.11);
+      }
+
+      const LOFI_CHORDS = [
+        [261.63, 329.63, 392.00, 493.88],
+        [220.00, 261.63, 329.63, 392.00],
+        [174.61, 220.00, 261.63, 349.23],
+        [196.00, 246.94, 293.66, 349.23]
+      ];
+      const RAVE_NOTES = [261.63, 311.13, 349.23, 392.00, 466.16, 523.25, 622.25, 783.99];
+
+      function startMusicLoop() {
+        if (musicStepTimer) clearInterval(musicStepTimer);
+        musicPlaying = true;
+        updateMusicUI();
+
+        const intervalMs = musicGenre === 'lofi' ? 220 : 120;
+        musicStepTimer = setInterval(() => {
+          if (!soundEnabled || !musicPlaying || !unlockedSet.has('music')) return;
+          ensureAudio();
+          if (!audioCtx) return;
+
+          const now = audioCtx.currentTime;
+          const step = musicStep % 16;
+
+          if (musicGenre === 'lofi') {
+            if (step === 0 || step === 8) {
+              const chord = LOFI_CHORDS[Math.floor((musicStep / 8) % LOFI_CHORDS.length)];
+              chord.forEach((freq) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+                osc.frequency.linearRampToValueAtTime(freq * 0.996, now + 0.8);
+                gain.gain.setValueAtTime(0.035, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 1.45);
+              });
+            }
+            if (step === 0 || step === 6 || step === 8) {
+              const osc = audioCtx.createOscillator();
+              const gain = audioCtx.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(115, now);
+              osc.frequency.exponentialRampToValueAtTime(38, now + 0.12);
+              gain.gain.setValueAtTime(0.15, now);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+              osc.connect(gain);
+              gain.connect(audioCtx.destination);
+              osc.start(now);
+              osc.stop(now + 0.17);
+            }
+            if (step % 2 === 0) {
+              const osc = audioCtx.createOscillator();
+              const gain = audioCtx.createGain();
+              osc.type = 'triangle';
+              osc.frequency.setValueAtTime(step === 4 || step === 12 ? 320 : 1200, now);
+              gain.gain.setValueAtTime(step === 4 || step === 12 ? 0.055 : 0.02, now);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+              osc.connect(gain);
+              gain.connect(audioCtx.destination);
+              osc.start(now);
+              osc.stop(now + 0.05);
+            }
+          } else {
+            const note = RAVE_NOTES[(step + Math.floor(musicStep / 4)) % RAVE_NOTES.length];
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(step % 2 === 0 ? note : note * 1.5, now);
+            gain.gain.setValueAtTime(0.05, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.11);
+
+            if (step % 4 === 0) {
+              const kick = audioCtx.createOscillator();
+              const kGain = audioCtx.createGain();
+              kick.frequency.setValueAtTime(150, now);
+              kick.frequency.exponentialRampToValueAtTime(42, now + 0.1);
+              kGain.gain.setValueAtTime(0.17, now);
+              kGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+              kick.connect(kGain);
+              kGain.connect(audioCtx.destination);
+              kick.start(now);
+              kick.stop(now + 0.13);
+            }
+          }
+          musicStep++;
+        }, intervalMs);
+      }
+
+      function updateMusicUI() {
+        if (musicPlaying && soundEnabled) {
+          musicPlayIcon.textContent = '⏸';
+          musicPlayText.textContent = 'Mute Beats';
+        } else {
+          musicPlayIcon.textContent = '▶️';
+          musicPlayText.textContent = 'Play Beats';
+        }
+        if (musicGenre === 'lofi') {
+          musicTitleLabel.textContent = '3am_vibe_coding_lofi.wav';
+          musicGenreTag.textContent = '3AM SHIPPING LOFI';
+          musicBpmTag.textContent = '82 BPM';
+        } else {
+          musicTitleLabel.textContent = 'prod_down_hyperpop.mod';
+          musicGenreTag.textContent = '100X ENGINEER RAVE';
+          musicBpmTag.textContent = '165 BPM';
+        }
+      }
+
+      // =====================================================
+      // 3. BOUNCING DVD / MRR BADGES & TECH SWARM
+      // =====================================================
+      const DVD_COLORS = ['#00e5ff', '#ff0055', '#ffbe0b', '#06d6a0', '#8338ec', '#fb5607', '#3a86ff'];
+      const DVD_LABELS = [
+        { top: '$10K', sub: 'MRR CLUB' },
+        { top: 'DVD', sub: 'VIDEO' },
+        { top: 'SHIP', sub: 'IT NOW' },
+        { top: '502', sub: 'GATEWAY' },
+        { top: 'RUST', sub: 'CRAB 🦀' }
+      ];
+
+      function createBouncer(type) {
+        const el = document.createElement('div');
+        el.className = 'absolute pointer-events-auto cursor-pointer select-none transition-transform active:scale-125';
+
+        const isMobile = window.innerWidth < 640;
+        let w = isMobile ? 92 : 112;
+        let h = isMobile ? 44 : 52;
+
+        if (type === 'dvd') {
+          const color = DVD_COLORS[bouncers.length % DVD_COLORS.length];
+          const lbl = DVD_LABELS[bouncers.length % DVD_LABELS.length];
+          el.innerHTML = `
+            <div class="w-[92px] h-[44px] sm:w-[112px] sm:h-[52px] rounded-xl bg-slate-950/95 border-2 flex flex-col items-center justify-center shadow-lg px-2" style="border-color:${color}; color:${color}">
+              <span class="font-black italic text-base sm:text-xl tracking-widest leading-none">${lbl.top}</span>
+              <span class="text-[8px] sm:text-[9px] font-mono-code tracking-widest uppercase border-t border-current mt-0.5 pt-0.5">${lbl.sub}</span>
+            </div>
+          `;
+        } else if (type === 'win-error') {
+          w = isMobile ? 132 : 158;
+          h = isMobile ? 58 : 68;
+          const errs = ['502 Bad Gateway', 'npm ERR! code 1', 'CORS Blocked', 'merge conflict'];
+          const chosenErr = errs[Math.floor(Math.random() * errs.length)];
+          el.innerHTML = `
+            <div class="retro-window w-[132px] sm:w-[158px] p-1 sm:p-1.5 text-[9px] sm:text-[10px] text-black">
+              <div class="retro-titlebar px-1 py-0.5 font-bold flex justify-between">
+                <span>Prod Error</span><span>×</span>
+              </div>
+              <div class="p-1 flex items-center gap-1 font-bold">
+                <span class="text-sm sm:text-base">💥</span>
+                <span class="truncate">${chosenErr}</span>
+              </div>
+            </div>
+          `;
+        } else if (type === 'emoji') {
+          w = 44;
+          h = 44;
+          const emojis = ['🦀', '🚀', '☕', '💸', '🔥', '🦄', '💀', '🤖', '📦'];
+          const chosen = emojis[Math.floor(Math.random() * emojis.length)];
+          el.innerHTML = `<div class="text-3xl sm:text-4xl drop-shadow-md">${chosen}</div>`;
+        }
+
+        bouncersLayer.appendChild(el);
+
+        const arenaW = viewportArena.clientWidth || window.innerWidth;
+        const arenaH = viewportArena.clientHeight || (window.innerHeight - 44);
+        const maxX = Math.max(40, arenaW - w - 10);
+        const maxY = Math.max(40, arenaH - h - 10);
+        const speed = type === 'emoji' ? 3.3 : 2.5;
+        const angle = (Math.floor(Math.random() * 4) * 90 + 45) * (Math.PI / 180);
+
+        const bouncerObj = {
+          type,
+          el,
+          w,
+          h,
+          x: Math.random() * maxX,
+          y: Math.random() * maxY,
+          vx: Math.cos(angle) * speed * (Math.random() > 0.5 ? 1 : -1),
+          vy: Math.sin(angle) * speed * (Math.random() > 0.5 ? 1 : -1)
+        };
+
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          addChaos(3, e.clientX, e.clientY, '+3 SHIPPED!');
+        });
+
+        bouncers.push(bouncerObj);
+      }
+
+      function updateBouncers() {
+        const vw = viewportArena.clientWidth || window.innerWidth;
+        const vh = viewportArena.clientHeight || (window.innerHeight - 44);
+
+        bouncers.forEach((b) => {
+          b.x += b.vx;
+          b.y += b.vy;
+
+          let hitX = false;
+          let hitY = false;
+
+          if (b.x <= 0) {
+            b.x = 0;
+            b.vx = Math.abs(b.vx);
+            hitX = true;
+          } else if (b.x + b.w >= vw) {
+            b.x = Math.max(0, vw - b.w);
+            b.vx = -Math.abs(b.vx);
+            hitX = true;
+          }
+
+          if (b.y <= 0) {
+            b.y = 0;
+            b.vy = Math.abs(b.vy);
+            hitY = true;
+          } else if (b.y + b.h >= vh) {
+            b.y = Math.max(0, vh - b.h);
+            b.vy = -Math.abs(b.vy);
+            hitY = true;
+          }
+
+          if ((hitX || hitY) && b.type === 'dvd') {
+            const nextColor = DVD_COLORS[Math.floor(Math.random() * DVD_COLORS.length)];
+            const box = b.el.firstElementChild;
+            if (box) {
+              box.style.borderColor = nextColor;
+              box.style.color = nextColor;
+            }
+            if (hitX && hitY) {
+              dvdCornerHits++;
+              cornerHitCounter.textContent = `DVD Corner Hits: ${dvdCornerHits}`;
+              showAchievement('🦄', 'SERIES A MIRACLE', 'EXACT CORNER HIT! $100M VALUATION UNLOCKED!');
+              playUnlockFanfare();
+            }
+          }
+
+          b.el.style.transform = `translate3d(${b.x}px, ${b.y}px, 0)`;
+        });
+      }
+
+      // =====================================================
+      // 4. INFINITE INDIE HACKER / 𝕏 CHAOS LAYER ENGINE
+      // =====================================================
+      const DYNAMIC_X_POSTS = [
+        { user: '@levels_clone_ai', badge: '🌴 Bali', text: 'I built 19 micro-SaaS apps in a weekend with HTML + SQLite. Now at $84k MRR 🌴' },
+        { user: '@ai_wrapper_ceo', badge: '🤖 GPT-9', text: 'Wrapped OpenAI in a dark-mode Tailwind template in 11 mins. Already at $14k MRR.' },
+        { user: '@rust_zealot', badge: '🦀 Blazing', text: 'Rewrote our landing page in Rust + Wasm. Compile time is 4 hrs, renders 0.002ms faster.' },
+        { user: '@vc_thought_ldr', badge: '🦄 Partner', text: 'We only fund founders who sleep on air mattresses and tweet 40 times a day.' },
+        { user: '@indie_burnout', badge: '☕ Day 412', text: 'Day 412 of #buildinpublic: Pivoted my B2B CRM into an AI Pomodoro Timer for cats.' },
+        { user: '@cursor_tab_god', badge: '⚡ 100x', text: 'I haven\'t typed code since November. I just hold down Tab and pray prod survives.' }
+      ];
+
+      function spawnInfiniteChaosLayer(layerNumber) {
+        infiniteHud.classList.remove('hidden');
+        infiniteLayerBadge.textContent = `LAYER #${layerNumber}`;
+        if (liveLayerTicker) liveLayerTicker.textContent = `#${layerNumber}`;
+
+        const archetype = INFINITE_ARCHETYPES[(layerNumber - 1) % INFINITE_ARCHETYPES.length];
+        const tierCycle = Math.floor((layerNumber - 1) / INFINITE_ARCHETYPES.length) + 1;
+        const multiplier = Math.pow(2, tierCycle - 1);
+
+        const feedRow = document.createElement('div');
+        feedRow.className = 'flex items-center justify-between text-indigo-200 bg-white/5 px-1.5 py-0.5 rounded';
+        feedRow.innerHTML = `
+          <span class="truncate">${archetype.icon} #${layerNumber}: ${archetype.name}</span>
+          <span class="text-emerald-400 font-bold ml-1">x${multiplier}</span>
+        `;
+        infiniteFeedList.insertBefore(feedRow, infiniteFeedList.firstChild);
+        while (infiniteFeedList.children.length > 12) {
+          infiniteFeedList.removeChild(infiniteFeedList.lastChild);
+        }
+
+        infiniteHistory.unshift({
+          layerNumber,
+          chaosAtUnlock: chaos,
+          icon: archetype.icon,
+          title: `Infinite Layer #${layerNumber}: ${archetype.name}${tierCycle > 1 ? ` (Tier ${tierCycle})` : ''}`,
+          desc: `Spawned interactive ${archetype.type.replace('_', ' ')} widget onto the canvas`
+        });
+
+        const isMobile = window.innerWidth < 640;
+        const maxCards = isMobile ? 6 : 12;
+        if (infiniteWidgets.length >= maxCards) {
+          const oldest = infiniteWidgets.shift();
+          if (oldest) oldest.remove();
+        }
+
+        const card = document.createElement('div');
+        card.className = 'absolute pointer-events-auto pop-in infinite-card-float cursor-pointer';
+
+        const vw = viewportArena.clientWidth || window.innerWidth;
+        const vh = viewportArena.clientHeight || (window.innerHeight - 44);
+        const angle = (layerNumber * 137.5) * (Math.PI / 180);
+        const radiusX = isMobile ? vw * 0.28 : Math.min(vw * 0.38, Math.max(150, vw * 0.35));
+        const radiusY = isMobile ? vh * 0.34 : Math.min(vh * 0.36, Math.max(120, vh * 0.32));
+        const cardW = isMobile ? 185 : 230;
+        const cx = vw / 2 + Math.cos(angle) * radiusX - cardW / 2;
+        const cy = vh / 2 + Math.sin(angle) * radiusY - 45;
+
+        card.style.left = `${Math.min(Math.max(8, cx), Math.max(8, vw - cardW - 10))}px`;
+        card.style.top = `${Math.min(Math.max(44, cy), Math.max(44, vh - 135))}px`;
+
+        if (archetype.type === 'x_thread') {
+          const post = DYNAMIC_X_POSTS[layerNumber % DYNAMIC_X_POSTS.length];
+          card.innerHTML = `
+            <div class="w-48 sm:w-60 bg-slate-950/95 text-white border-2 border-sky-400 rounded-xl p-2 sm:p-2.5 shadow-xl text-left">
+              <div class="flex items-center justify-between text-[9px] sm:text-[10px] mb-1">
+                <span class="font-bold text-sky-400 truncate">🧵 ${post.user} ✓</span>
+                <span class="bg-slate-800 text-amber-300 font-mono-code px-1.5 py-0.5 rounded">Layer #${layerNumber}</span>
+              </div>
+              <p class="text-[9px] sm:text-[10px] text-slate-200 leading-snug mb-1">${post.text}</p>
+              <div class="flex items-center justify-between text-[8px] sm:text-[9px] text-emerald-400 font-mono-code border-t border-slate-800 pt-1">
+                <span>♾️ Infinite Engine</span>
+                <span class="text-pink-400 font-bold">❤️ ${(4.2 * multiplier).toFixed(1)}K (+5)</span>
+              </div>
+            </div>
+          `;
+        } else if (archetype.type === 'stripe_toast') {
+          const amt = (49 * multiplier).toLocaleString();
+          card.innerHTML = `
+            <div class="w-48 sm:w-60 bg-slate-950/95 text-white border-2 border-indigo-400 rounded-xl p-2 shadow-xl text-left">
+              <div class="flex items-center justify-between text-[9px] sm:text-[10px] font-bold text-indigo-300">
+                <span>💸 Stripe Webhook</span>
+                <span class="text-amber-300 font-mono-code">Layer #${layerNumber}</span>
+              </div>
+              <div class="text-[10px] sm:text-xs font-extrabold text-emerald-300 mt-0.5">+$${amt}/mo MRR ▲</div>
+              <div class="text-[8px] sm:text-[9px] text-slate-400 truncate">New Pro AI Wrapper Sub (Churned 4s later)</div>
+            </div>
+          `;
+        } else if (archetype.type === 'npm_terminal') {
+          card.innerHTML = `
+            <div class="w-48 sm:w-60 bg-zinc-950 text-lime-400 border-2 border-lime-500/80 rounded-xl p-2 font-mono-code text-[8px] sm:text-[9px] text-left shadow-xl">
+              <div class="text-zinc-400 border-b border-zinc-800 pb-0.5 mb-1 flex justify-between">
+                <span>📦 npm install --force</span><span class="text-amber-300">#${layerNumber}</span>
+              </div>
+              <div class="truncate">$ ${archetype.cmd}</div>
+              <div class="text-white font-bold mt-0.5">node_modules: ${(64.2 * multiplier).toFixed(1)} GB</div>
+            </div>
+          `;
+        } else {
+          card.innerHTML = `
+            <div class="w-48 sm:w-60 bg-slate-950/95 text-white border-2 border-amber-400 rounded-xl p-2 shadow-xl text-left">
+              <div class="flex items-center justify-between text-[9px] sm:text-[10px] font-black text-amber-300">
+                <span class="truncate">${archetype.icon} ${archetype.name}</span>
+                <span class="font-mono-code text-[9px]">#${layerNumber}</span>
+              </div>
+              <div class="text-[9px] sm:text-[10px] text-slate-200 mt-1 font-mono-code leading-tight">
+                ${archetype.tagline || archetype.service || archetype.caption || archetype.code || archetype.offer || archetype.err || archetype.domain || archetype.title || archetype.pitch}
+              </div>
+            </div>
+          `;
+        }
+
+        card.addEventListener('click', (e) => {
+          e.stopPropagation();
+          card.classList.remove('pop-in');
+          void card.offsetWidth;
+          card.classList.add('pop-in');
+          addChaos(5, e.clientX, e.clientY, `+5 ${archetype.icon} VIRAL!`);
+        });
+
+        infiniteChaosLayer.appendChild(card);
+        infiniteWidgets.push(card);
+
+        if (layerNumber % 3 === 0 && bouncers.length < (isMobile ? 12 : 24)) {
+          createBouncer(layerNumber % 6 === 0 ? 'dvd' : 'emoji');
+        }
+
+        showAchievement(archetype.icon, `INFINITE LAYER #${layerNumber} UNLOCKED`, archetype.name);
+        playUnlockFanfare();
+      }
+
+      // =====================================================
+      // 5. SUBWAY SURFERS / GITHUB GREEN SQUARES PIP (30 Chaos)
+      // =====================================================
+      function initSoapCubes() {
+        soapCubes = [];
+        for (let r = 0; r < 5; r++) {
+          for (let c = 0; c < 4; c++) {
+            soapCubes.push({
+              x: 42 + c * 34,
+              y: 55 + r * 32,
+              cut: false,
+              vy: 0,
+              vx: 0
+            });
+          }
+        }
+      }
+      initSoapCubes();
+
+      function updateAndDrawSubwayRunner() {
+        if (!unlockedSet.has('subway')) return;
+        runnerTick++;
+        const w = subwayCanvas.width;
+        const h = subwayCanvas.height;
+        const ctx = subwayCtx;
+
+        if (runnerChannel === 0) {
+          ctx.fillStyle = '#1e1b4b';
+          ctx.fillRect(0, 0, w, h);
+
+          const skyGrad = ctx.createLinearGradient(0, 0, 0, 70);
+          skyGrad.addColorStop(0, '#ec4899');
+          skyGrad.addColorStop(1, '#312e81');
+          ctx.fillStyle = skyGrad;
+          ctx.fillRect(0, 0, w, 70);
+
+          ctx.fillStyle = '#fde047';
+          ctx.beginPath();
+          ctx.arc(w / 2, 44, 20, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#334155';
+          ctx.beginPath();
+          ctx.moveTo(w * 0.25, 70);
+          ctx.lineTo(w * 0.75, 70);
+          ctx.lineTo(w, h);
+          ctx.lineTo(0, h);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.strokeStyle = '#94a3b8';
+          ctx.lineWidth = 2;
+          [0.38, 0.62].forEach((ratio) => {
+            ctx.beginPath();
+            ctx.moveTo(w * (0.25 + ratio * 0.5), 70);
+            ctx.lineTo(w * ratio, h);
+            ctx.stroke();
+          });
+
+          if (runnerTick % 36 === 0) {
+            const obsLane = Math.floor(Math.random() * 3);
+            runnerObstacles.push({ lane: obsLane, prog: 0.02, color: obsLane === 1 ? '#ef4444' : '#3b82f6' });
+          }
+          if (runnerTick % 16 === 0) {
+            runnerCoinItems.push({ lane: Math.floor(Math.random() * 3), prog: 0.02 });
+          }
+
+          runnerObstacles.forEach((obs) => {
+            obs.prog += 0.022;
+            if (obs.prog > 0.62 && obs.prog < 0.85 && obs.lane === runnerLane) {
+              runnerLane = (runnerLane + 1) % 3;
+            }
+          });
+          runnerObstacles = runnerObstacles.filter((o) => o.prog < 1.05);
+
+          runnerCoinItems.forEach((coin) => {
+            coin.prog += 0.025;
+            const y = 70 + coin.prog * (h - 70);
+            const laneOffset = (coin.lane - 1) * (20 + coin.prog * 46);
+            const x = w / 2 + laneOffset;
+            const r = 4 + coin.prog * 7;
+
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (coin.prog > 0.78 && coin.prog < 0.92 && coin.lane === runnerLane && !coin.collected) {
+              coin.collected = true;
+              runnerCoins += 99;
+              runnerOverlayStat.textContent = `MRR: $${runnerCoins}`;
+            }
+          });
+          runnerCoinItems = runnerCoinItems.filter((c) => c.prog < 1.0 && !c.collected);
+
+          runnerObstacles.forEach((obs) => {
+            const y = 70 + obs.prog * (h - 70);
+            const laneOffset = (obs.lane - 1) * (18 + obs.prog * 50);
+            const x = w / 2 + laneOffset;
+            const boxW = 16 + obs.prog * 32;
+            const boxH = 18 + obs.prog * 34;
+
+            ctx.fillStyle = obs.color;
+            ctx.fillRect(x - boxW / 2, y - boxH, boxW, boxH);
+            ctx.fillStyle = '#fef08a';
+            ctx.fillRect(x - boxW * 0.35, y - boxH * 0.75, boxW * 0.7, boxH * 0.3);
+          });
+
+          const playerX = w / 2 + (runnerLane - 1) * 56;
+          const bounceY = Math.abs(Math.sin(runnerTick * 0.25)) * 7;
+          const playerY = h - 26 - bounceY;
+
+          ctx.fillStyle = '#10b981';
+          ctx.beginPath();
+          ctx.ellipse(playerX, h - 16, 16, 5, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#f97316';
+          ctx.fillRect(playerX - 9, playerY - 20, 18, 20);
+          ctx.fillStyle = '#fde047';
+          ctx.beginPath();
+          ctx.arc(playerX, playerY - 24, 8, 0, Math.PI * 2);
+          ctx.fill();
+
+        } else if (runnerChannel === 1) {
+          ctx.fillStyle = '#090d16';
+          ctx.fillRect(0, 0, w, h);
+
+          const bladeY = 220 - ((runnerTick * 2.2) % 200);
+          soapCubes.forEach((cube) => {
+            if (!cube.cut && bladeY < cube.y + 16) {
+              cube.cut = true;
+              cube.vx = (Math.random() - 0.5) * 4;
+              cube.vy = -2.5 - Math.random() * 2;
+              runnerCoins += 10;
+              runnerOverlayStat.textContent = `COMMITS: ${runnerCoins}`;
+            }
+            if (cube.cut) {
+              cube.x += cube.vx;
+              cube.y += cube.vy;
+              cube.vy += 0.22;
+            }
+            ctx.fillStyle = cube.cut ? '#4ade80' : '#16a34a';
+            ctx.fillRect(cube.x, cube.y, 26, 26);
+          });
+          if (bladeY < 35) initSoapCubes();
+
+          ctx.fillStyle = '#38bdf8';
+          ctx.fillRect(10, bladeY, w - 20, 9);
+        } else {
+          ctx.fillStyle = '#18181b';
+          ctx.fillRect(0, 0, w, h);
+
+          const cycle = (runnerTick * 2) % 200;
+          const pressH = cycle < 130 ? 30 + cycle * 1.05 : Math.max(30, 166 - (cycle - 130) * 2.1);
+          const squish = Math.max(0, (pressH - 105) / 62);
+
+          ctx.fillStyle = '#71717a';
+          ctx.fillRect(w / 2 - 44, 0, 88, pressH);
+          ctx.fillStyle = '#ef4444';
+          ctx.fillRect(w / 2 - 54, pressH - 12, 108, 12);
+
+          ctx.fillStyle = '#52525b';
+          ctx.fillRect(20, 205, w - 40, 55);
+
+          const objW = 52 + squish * 70;
+          const objH = Math.max(10, 58 * (1 - squish * 0.82));
+          ctx.fillStyle = '#facc15';
+          ctx.beginPath();
+          ctx.ellipse(w / 2, 205 - objH / 2, objW / 2, objH / 2, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // =====================================================
+      // 6. FULL-SCREEN RAIN & STORM EFFECT (50 Chaos)
+      // =====================================================
+      function initRain() {
+        rainCanvas.width = window.innerWidth;
+        rainCanvas.height = window.innerHeight;
+        rainDrops = [];
+        for (let i = 0; i < 95; i++) {
+          rainDrops.push({
+            x: Math.random() * rainCanvas.width,
+            y: Math.random() * rainCanvas.height,
+            len: 14 + Math.random() * 18,
+            speed: 11 + Math.random() * 8
+          });
+        }
+      }
+
+      function updateAndDrawRain() {
+        if (!unlockedSet.has('rain')) return;
+        const w = rainCanvas.width;
+        const h = rainCanvas.height;
+        rainCtx.clearRect(0, 0, w, h);
+
+        rainCtx.strokeStyle = chaos >= 200 ? 'rgba(52, 211, 153, 0.72)' : 'rgba(99, 102, 241, 0.55)';
+        rainCtx.lineWidth = 1.8;
+        rainCtx.beginPath();
+
+        rainDrops.forEach((d) => {
+          rainCtx.moveTo(d.x, d.y);
+          rainCtx.lineTo(d.x - 3, d.y + d.len);
+          d.x -= 2.2;
+          d.y += d.speed;
+
+          if (d.y > h) {
+            rainSplashes.push({ x: d.x, y: h - 4, r: 1, alpha: 0.7 });
+            d.y = -20;
+            d.x = Math.random() * (w + 100);
+          }
+        });
+        rainCtx.stroke();
+
+        rainSplashes.forEach((s) => {
+          rainCtx.strokeStyle = `rgba(99, 102, 241, ${s.alpha})`;
+          rainCtx.beginPath();
+          rainCtx.arc(s.x, s.y, s.r, Math.PI, 0);
+          rainCtx.stroke();
+          s.r += 0.8;
+          s.alpha -= 0.08;
+        });
+        rainSplashes = rainSplashes.filter((s) => s.alpha > 0);
+      }
+
+      // =====================================================
+      // 7. INDIE HACKER / FOUNDER RETRO POPUPS (75 Chaos)
+      // =====================================================
+      const POPUP_TEMPLATES = [
+        { title: 'PagerDuty_Incident.exe', icon: '🚨', msg: 'Prod DB dropped on Friday at 4:59 PM. Rewrite in PHP?', btn: 'Blame AI Wrapper' },
+        { title: 'AWS_Billing_Alert.exe',  icon: '☁️', msg: 'Free Tier expired 3 mins ago. You owe Jeff Bezos $84,290.12.', btn: 'Delete Account' },
+        { title: 'Stripe_Webhook.exe',     icon: '💸', msg: 'New $9/mo subscriber! Wait... they refunded & disputed.', btn: 'Cry in MRR' },
+        { title: 'Product_Hunt_DM.app',    icon: '🐱', msg: '"Hey bro! Upvote our AI cat-food scheduler and we’ll upvote you?"', btn: 'Send 🙏 Emoji' },
+        { title: 'Pieter_Bot_v4.sh',       icon: '🌴', msg: 'Why React? Real indie hackers build $100k/mo apps in 1 PHP file.', btn: 'Ship index.php' },
+        { title: 'OpenAI Rate Limit',      icon: '🤖', msg: '429 Too Many Requests: Burned $5,000 of tokens in 12 seconds.', btn: 'Buy More Credits' }
+      ];
+
+      function spawnRetroPopup() {
+        if (!unlockedSet.has('popups')) return;
+        const isMobile = window.innerWidth < 640;
+        if (activePopupsCount >= (isMobile ? 3 : 5)) return;
+
+        const tpl = POPUP_TEMPLATES[Math.floor(Math.random() * POPUP_TEMPLATES.length)];
+        const popup = document.createElement('div');
+        popup.className = 'retro-window absolute w-52 sm:w-64 p-1.5 pointer-events-auto pop-in text-black';
+
+        const vw = viewportArena.clientWidth || window.innerWidth;
+        const vh = viewportArena.clientHeight || (window.innerHeight - 44);
+        const side = Math.floor(Math.random() * 2);
+        const x = side === 0 ? 12 + Math.random() * 40 : Math.max(12, vw - 265 - Math.random() * 40);
+        const y = 55 + Math.random() * Math.max(40, vh - 240);
+
+        popup.style.left = `${Math.min(Math.max(8, x), Math.max(8, vw - 220))}px`;
+        popup.style.top = `${Math.min(Math.max(44, y), Math.max(44, vh - 165))}px`;
+
+        popup.innerHTML = `
+          <div class="retro-titlebar px-2 py-1 flex items-center justify-between text-[11px] font-bold mb-1.5">
+            <span class="truncate">${tpl.title}</span>
+            <button type="button" class="popup-close retro-btn w-4 h-4 text-[10px] leading-none font-black text-black flex items-center justify-center">×</button>
+          </div>
+          <div class="px-1.5 py-1 flex items-start gap-2 text-[11px]">
+            <span class="text-xl shrink-0">${tpl.icon}</span>
+            <p class="leading-snug font-medium text-zinc-900">${tpl.msg}</p>
+          </div>
+          <div class="mt-1.5 mb-0.5 flex justify-center">
+            <button type="button" class="popup-action retro-btn px-2.5 py-0.5 text-[11px] font-bold text-black active:translate-y-px">
+              ${tpl.btn}
+            </button>
+          </div>
+        `;
+
+        const closePopup = (e) => {
+          e.stopPropagation();
+          popup.remove();
+          activePopupsCount = Math.max(0, activePopupsCount - 1);
+          addChaos(2, e.clientX, e.clientY, '+2 RESOLVED');
+        };
+
+        popup.querySelector('.popup-close').addEventListener('click', closePopup);
+        popup.querySelector('.popup-action').addEventListener('click', closePopup);
+
+        popupsLayer.appendChild(popup);
+        activePopupsCount++;
+        playPopupBlip();
+      }
+
+      // =====================================================
+      // 8. LIVE 𝕏 TECH TIMELINE & GLITCH OVERLAYS (125 & 200+)
+      // =====================================================
+      const CHAT_LINES = [
+        { user: '@ship_fast_bro', color: '#38bdf8', text: 'Just launched my 9th boilerplate 🔥 $40k MRR incoming' },
+        { user: '@rust_borrow_chk', color: '#fb923c', text: 'have you considered rewriting this click button in Rust?' },
+        { user: '@vc_associate', color: '#4ade80', text: 'DMing you! Love the click velocity. Raising a seed round?' },
+        { user: '@hn_cynic_1999', color: '#facc15', text: 'Show HN: Yet another button I could build in 2 lines of awk' },
+        { user: '@bali_indie_dev', color: '#c084fc', text: 'Day 3 of #buildinpublic: 0 paying users, 14,000 impressions 🚀' },
+        { user: '@aws_billing_bot', color: '#f87171', text: 'URGENT: Your S3 bucket is public and serving 90TB/sec' },
+        { user: '@vibe_coder_ai', color: '#2dd4bf', text: 'Prompted Cursor to fix a typo and it deleted our auth table 💀' }
+      ];
+
+      function appendChatMessage() {
+        if (chaos < 110) return;
+        const item = CHAT_LINES[Math.floor(Math.random() * CHAT_LINES.length)];
+        const row = document.createElement('div');
+        row.innerHTML = `<span style="color:${item.color}" class="font-bold">${item.user}:</span> <span class="text-zinc-100">${item.text}</span>`;
+        chatMessagesEl.appendChild(row);
+        while (chatMessagesEl.children.length > 16) {
+          chatMessagesEl.removeChild(chatMessagesEl.firstChild);
+        }
+        chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+        const impr = (14.2 + chaos * 0.45 + infiniteLayersUnlocked * 3.1).toFixed(1);
+        viewerCountEl.textContent = `📊 ${impr}K impr`;
+      }
+
+      const GLITCH_PHRASES = [
+        'git push --force origin main // VIBE_OVERFLOW',
+        'Segmentation fault (core dumped)',
+        'NODE_MODULES SIZE: 942.8 GB',
+        'AI HALLUCINATED PRODUCTION DB',
+        'ERR_TOO_MANY_MICRO_SAAS_PIVOTS'
+      ];
+
+      function triggerGlitchPulse() {
+        if (!unlockedSet.has('glitch')) return;
+
+        viewportArena.classList.add('glitch-shake');
+        setTimeout(() => viewportArena.classList.remove('glitch-shake'), 240);
+
+        const stamp = document.createElement('div');
+        stamp.className = 'absolute font-mono-code font-black text-[11px] sm:text-sm px-2.5 py-1 bg-black text-lime-400 border-2 border-pink-500 chromatic-text pointer-events-none';
+        stamp.style.left = `${Math.random() * 65 + 10}%`;
+        stamp.style.top = `${Math.random() * 65 + 15}%`;
+        stamp.style.transform = `rotate(${(Math.random() - 0.5) * 16}deg)`;
+        stamp.textContent = GLITCH_PHRASES[Math.floor(Math.random() * GLITCH_PHRASES.length)];
+        glitchLayer.appendChild(stamp);
+
+        setTimeout(() => stamp.remove(), 1350);
+      }
+
+      // =====================================================
+      // 9. AUDIO VISUALIZER CANVAS (100 Chaos)
+      // =====================================================
+      function drawAudioVisualizer() {
+        if (!unlockedSet.has('music')) return;
+        const w = audioVizCanvas.width;
+        const h = audioVizCanvas.height;
+        audioVizCtx.fillStyle = '#09090b';
+        audioVizCtx.fillRect(0, 0, w, h);
+
+        const bars = 20;
+        const barW = Math.floor(w / bars) - 2;
+        for (let i = 0; i < bars; i++) {
+          const active = musicPlaying && soundEnabled;
+          const wave = active
+            ? Math.abs(Math.sin(runnerTick * 0.15 + i * 0.55)) * (musicGenre === 'rave' ? 0.95 : 0.65) + Math.random() * 0.25
+            : 0.08;
+          const barH = Math.max(3, Math.floor(wave * (h - 4)));
+          audioVizCtx.fillStyle = musicGenre === 'rave' ? '#f43f5e' : '#10b981';
+          audioVizCtx.fillRect(i * (barW + 2) + 2, h - barH, barW, barH);
+        }
+      }
+
+      // =====================================================
+      // 10. CORE PROGRESSION & INFINITE UNLOCK ENGINE
+      // =====================================================
+      let toastTimeout = null;
+      function showAchievement(icon, label, title) {
+        toastIcon.textContent = icon;
+        toastLabel.textContent = label;
+        toastTitle.textContent = title;
+        achievementToast.classList.remove('opacity-0', '-translate-y-4');
+        achievementToast.classList.add('opacity-100', 'translate-y-0');
+
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          achievementToast.classList.add('opacity-0', '-translate-y-4');
+          achievementToast.classList.remove('opacity-100', 'translate-y-0');
+        }, 3100);
+      }
+
+      function spawnClickParticleAndRipple(x, y, customText) {
+        // Click Ripple Ring (just like in the Launch Video!)
+        const ripple = document.createElement('div');
+        ripple.className = 'click-ripple';
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        document.body.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 420);
+
+        // Floating Particle
+        const p = document.createElement('div');
+        p.className = 'click-particle font-mono-code font-black text-base sm:text-xl select-none';
+        const rot = Math.floor(Math.random() * 30 - 15);
+        p.style.setProperty('--rot', `${rot}deg`);
+        p.style.left = `${x - 24 + (Math.random() * 30 - 15)}px`;
+        p.style.top = `${y - 28}px`;
+
+        const colors = ['#34d399', '#38bdf8', '#fbbf24', '#f472b6', '#a78bfa'];
+        p.style.color = colors[chaos % colors.length];
+        p.style.textShadow = '0 2px 10px rgba(0,0,0,0.85)';
+        p.textContent = customText || '+1';
+
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 760);
+      }
+
+      function checkUnlocks() {
+        MILESTONES.forEach((m) => {
+          if (chaos >= m.threshold && !unlockedSet.has(m.id)) {
+            unlockedSet.add(m.id);
+            activateMilestone(m);
+            showAchievement(m.icon, `UNLOCKED AT ${m.threshold} CHAOS`, m.title);
+            playUnlockFanfare();
+          }
+        });
+
+        if (chaos >= 125 && !unlockedSet.has('streamchat')) {
+          unlockedSet.add('streamchat');
+          stockSubticker.classList.remove('hidden');
+          streamChatWidget.classList.remove('hidden');
+          if (chatTimer) clearInterval(chatTimer);
+          chatTimer = setInterval(appendChatMessage, 1100);
+          appendChatMessage();
+          showAchievement('🐦', 'BONUS UNLOCK (125 CHAOS)', 'Live 𝕏 Build-in-Public Timeline');
+        }
+
+        while (chaos >= nextInfiniteThreshold) {
+          infiniteLayersUnlocked++;
+          spawnInfiniteChaosLayer(infiniteLayersUnlocked);
+          nextInfiniteThreshold += 20;
+        }
+      }
+
+      function activateMilestone(m) {
+        if (m.id === 'dvd') {
+          createBouncer('dvd');
+        } else if (m.id === 'news') {
+          newsTicker.classList.remove('hidden');
+        } else if (m.id === 'subway') {
+          subwayWidget.classList.remove('hidden');
+        } else if (m.id === 'rain') {
+          initRain();
+          rainCanvas.classList.remove('hidden');
+        } else if (m.id === 'popups') {
+          spawnRetroPopup();
+          if (popupTimer) clearInterval(popupTimer);
+          popupTimer = setInterval(spawnRetroPopup, 3800);
+        } else if (m.id === 'music') {
+          musicWidget.classList.remove('hidden');
+          startMusicLoop();
+        } else if (m.id === 'swarm') {
+          createBouncer('dvd');
+          createBouncer('win-error');
+          createBouncer('emoji');
+          createBouncer('emoji');
+        } else if (m.id === 'glitch') {
+          appBody.classList.add('overdrive-filter');
+          chaosCountEl.classList.add('chromatic-text');
+          mainBtn.classList.remove('from-slate-800', 'to-slate-950', 'border-sky-400');
+          mainBtn.classList.add('from-indigo-600', 'via-pink-600', 'to-amber-500', 'border-yellow-300');
+          if (glitchTimer) clearInterval(glitchTimer);
+          glitchTimer = setInterval(triggerGlitchPulse, 1800);
+          triggerGlitchPulse();
+        }
+        updateUnlocksModalList();
+      }
+
+      function updateUI() {
+        chaosCountEl.textContent = chaos.toLocaleString();
+        if (chromeChaosReadout) chromeChaosReadout.textContent = `CHAOS: ${chaos}`;
+
+        simulatedMrr = chaos * 149 + infiniteLayersUnlocked * 1250;
+        simulatedAwsBill = 12 + chaos * 85 + infiniteLayersUnlocked * 640;
+        const impressions = (chaos * 420 + infiniteLayersUnlocked * 5200).toLocaleString();
+
+        metricMrr.textContent = `$${simulatedMrr.toLocaleString()} MRR`;
+        metricFollowers.textContent = `${impressions} 𝕏 Impr`;
+        metricWrappers.textContent = `${infiniteLayersUnlocked} ∞ Layers`;
+
+        if (liveMrrTicker) liveMrrTicker.textContent = `$${simulatedMrr.toLocaleString()}/mo ▲`;
+        if (liveAwsTicker) liveAwsTicker.textContent = `$${simulatedAwsBill.toLocaleString()} ▲`;
+        if (liveDomainsTicker) liveDomainsTicker.textContent = `${chaos * 2} (0 Shipped)`;
+
+        chaosCounterWrap.style.transform = 'scale(1.14)';
+        setTimeout(() => {
+          chaosCounterWrap.style.transform = 'scale(1)';
+        }, 70);
+
+        if (chaos > 0) {
+          statusBadge.classList.remove('opacity-0');
+          indieMetricsPill.classList.remove('opacity-0');
+          progressContainer.classList.remove('opacity-0');
+        } else {
+          statusBadge.classList.add('opacity-0');
+          indieMetricsPill.classList.add('opacity-0');
+          progressContainer.classList.add('opacity-0');
+        }
+
+        let currentMeta = SUBTITLES[0];
+        for (const s of SUBTITLES) {
+          if (chaos >= s.min) currentMeta = s;
+        }
+        if (chaos >= 200) {
+          statusText.textContent = `♾️ Founder Level ${9 + infiniteLayersUnlocked}: ${infiniteLayersUnlocked} Infinite Layers`;
+        } else {
+          statusText.textContent = currentMeta.rank;
+        }
+        mainBtnSub.textContent = currentMeta.sub;
+        mainBtnLabel.textContent = currentMeta.btnText;
+
+        const nextCore = MILESTONES.find((m) => chaos < m.threshold);
+        const nextTarget = nextCore && nextCore.threshold < nextInfiniteThreshold
+          ? { threshold: nextCore.threshold, label: `${nextCore.icon} ${nextCore.title}` }
+          : {
+              threshold: nextInfiniteThreshold,
+              label: `${INFINITE_ARCHETYPES[infiniteLayersUnlocked % INFINITE_ARCHETYPES.length].icon} Infinite Layer #${infiniteLayersUnlocked + 1}`
+            };
+
+        const prevThreshold = Math.max(0, nextTarget.threshold - 20);
+        const span = Math.max(5, nextTarget.threshold - prevThreshold);
+        const pct = Math.min(100, Math.max(6, ((chaos - prevThreshold) / span) * 100));
+        progressBar.style.width = `${pct}%`;
+        nextUnlockHint.textContent = `Next at ${nextTarget.threshold} chaos → ${nextTarget.label}`;
+
+        const coreCount = MILESTONES.filter((m) => unlockedSet.has(m.id)).length;
+        unlocksCountLabel.textContent = infiniteLayersUnlocked > 0
+          ? `Unlocks (${coreCount}/8 + ${infiniteLayersUnlocked}∞)`
+          : `Unlocks (${coreCount}/8)`;
+      }
+
+      function addChaos(amount, clientX, clientY, labelText) {
+        chaos += amount;
+        playClickSfx();
+
+        const findParticleText = () => {
+          if (labelText && labelText !== '+1') return labelText;
+          const founderParticles = ['+1', '+$9 MRR', '+1 Ship 🚀', '+1 Wrapper', '+1 Upvote ▲', '+1 Commit 🟩', '+$49 Stripe'];
+          return chaos < 5 ? `+${amount}` : founderParticles[chaos % founderParticles.length];
+        };
+
+        const rect = mainBtn.getBoundingClientRect();
+        const px = clientX || (rect.left + rect.width / 2);
+        const py = clientY || (rect.top + rect.height / 2);
+        spawnClickParticleAndRipple(px, py, findParticleText());
+
+        if (unlockedSet.has('rain') && Math.random() < 0.14) {
+          lightningFlash.style.opacity = '0.55';
+          setTimeout(() => {
+            lightningFlash.style.opacity = '0';
+          }, 90);
+        }
+
+        if (chaos >= 200) {
+          triggerGlitchPulse();
+        }
+
+        checkUnlocks();
+        updateUI();
+      }
+
+      // =====================================================
+      // 11. THEME TOGGLE, RESET, SHARE & MODALS
+      // =====================================================
+      function toggleTheme() {
+        isDarkMode = !isDarkMode;
+        if (isDarkMode) {
+          document.documentElement.classList.remove('light-theme');
+          themeIcon.textContent = '🌙';
+          themeLabel.textContent = 'Dark';
+          chromeModeLabel.textContent = 'REC • DARK MODE';
+          urlThemeParam.textContent = '/indie-founder-x?theme=dark';
+          centerCard.className = 'pointer-events-auto flex flex-col items-center text-center max-w-sm sm:max-w-md w-full p-4 sm:p-7 rounded-3xl transition-all duration-300 bg-[#0d121e]/85 border border-indigo-500/30 shadow-2xl backdrop-blur-md';
+          chaosCountEl.classList.remove('text-slate-900');
+          chaosCountEl.classList.add('text-white');
+        } else {
+          document.documentElement.classList.add('light-theme');
+          themeIcon.textContent = '☀️';
+          themeLabel.textContent = 'Light';
+          chromeModeLabel.textContent = 'REC • LIGHT MODE';
+          urlThemeParam.textContent = '/indie-founder-x?theme=light';
+          centerCard.className = 'pointer-events-auto flex flex-col items-center text-center max-w-sm sm:max-w-md w-full p-4 sm:p-7 rounded-3xl transition-all duration-300 bg-white/90 border border-slate-300 shadow-2xl backdrop-blur-md';
+          chaosCountEl.classList.remove('text-white');
+          chaosCountEl.classList.add('text-slate-900');
+        }
+      }
+
+      function resetAllChaos() {
+        chaos = 0;
+        unlockedSet.clear();
+        infiniteLayersUnlocked = 0;
+        infiniteHistory = [];
+        nextInfiniteThreshold = 20;
+        dvdCornerHits = 0;
+        activePopupsCount = 0;
+        runnerCoins = 0;
+
+        if (popupTimer) { clearInterval(popupTimer); popupTimer = null; }
+        if (chatTimer) { clearInterval(chatTimer); chatTimer = null; }
+        if (glitchTimer) { clearInterval(glitchTimer); glitchTimer = null; }
+        if (musicStepTimer) { clearInterval(musicStepTimer); musicStepTimer = null; }
+        if (autoClickerInterval) {
+          clearInterval(autoClickerInterval);
+          autoClickerInterval = null;
+          autoclickLabel.textContent = 'Auto: OFF';
+        }
+        musicPlaying = false;
+
+        bouncers = [];
+        infiniteWidgets = [];
+        bouncersLayer.innerHTML = '';
+        infiniteChaosLayer.innerHTML = '';
+        infiniteFeedList.innerHTML = '';
+        popupsLayer.innerHTML = '';
+        glitchLayer.innerHTML = '';
+        chatMessagesEl.innerHTML = '';
+
+        newsTicker.classList.add('hidden');
+        stockSubticker.classList.add('hidden');
+        subwayWidget.classList.add('hidden');
+        rainCanvas.classList.add('hidden');
+        musicWidget.classList.add('hidden');
+        streamChatWidget.classList.add('hidden');
+        infiniteHud.classList.add('hidden');
+
+        appBody.classList.remove('overdrive-filter', 'glitch-shake');
+        chaosCountEl.classList.remove('chromatic-text');
+        mainBtn.classList.remove('from-indigo-600', 'via-pink-600', 'to-amber-500', 'border-yellow-300');
+        mainBtn.classList.add('from-slate-800', 'to-slate-950', 'border-sky-400');
+
+        updateUI();
+        updateUnlocksModalList();
+        showAchievement('🧘', 'PIVOTED BACK TO ZERO', 'Deleted all repos. Touching grass.');
+      }
+
+      function updateUnlocksModalList() {
+        unlocksList.innerHTML = '';
+
+        if (infiniteHistory.length > 0) {
+          const header = document.createElement('div');
+          header.className = 'text-[11px] font-black uppercase tracking-wider text-indigo-400 pt-1 pb-0.5';
+          header.textContent = `♾️ Unlocked Infinite Founder Layers (${infiniteHistory.length})`;
+          unlocksList.appendChild(header);
+
+          infiniteHistory.slice(0, 15).forEach((item) => {
+            const el = document.createElement('div');
+            el.className = 'p-2 rounded-xl border bg-indigo-950/60 border-indigo-500/50 text-white flex items-center justify-between';
+            el.innerHTML = `
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="text-lg shrink-0">${item.icon}</span>
+                <div class="min-w-0">
+                  <div class="font-bold text-white truncate">${item.title}</div>
+                  <div class="text-[10px] text-slate-400 truncate">${item.desc}</div>
+                </div>
+              </div>
+              <span class="font-mono-code font-bold text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 shrink-0 ml-2">${item.chaosAtUnlock} chaos</span>
+            `;
+            unlocksList.appendChild(el);
+          });
+        }
+
+        const coreHeader = document.createElement('div');
+        coreHeader.className = 'text-[11px] font-black uppercase tracking-wider text-slate-400 pt-2 pb-0.5';
+        coreHeader.textContent = '🏆 Core Escalation Milestones';
+        unlocksList.appendChild(coreHeader);
+
+        MILESTONES.forEach((m) => {
+          const isUnlocked = unlockedSet.has(m.id);
+          const item = document.createElement('div');
+          item.className = `p-2.5 rounded-xl border flex items-center justify-between ${
+            isUnlocked ? 'bg-emerald-950/50 border-emerald-500/50 text-white' : 'bg-slate-800/50 border-slate-700 text-slate-400'
+          }`;
+          item.innerHTML = `
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="text-xl shrink-0">${isUnlocked ? m.icon : '🔒'}</span>
+              <div class="min-w-0">
+                <div class="font-bold text-slate-100 truncate">${m.title}</div>
+                <div class="text-[11px] text-slate-400 truncate">${m.desc}</div>
+              </div>
+            </div>
+            <span class="font-mono-code font-bold text-xs px-2 py-0.5 rounded-full shrink-0 ml-2 ${
+              isUnlocked ? 'bg-emerald-500/30 text-emerald-200' : 'bg-slate-700 text-slate-300'
+            }">${m.threshold} chaos</span>
+          `;
+          unlocksList.appendChild(item);
+        });
+      }
+
+      // =====================================================
+      // 12. EVENT LISTENERS & MAIN ANIMATION LOOP
+      // =====================================================
+      mainBtn.addEventListener('click', (e) => {
+        addChaos(1, e.clientX, e.clientY, '+1');
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if ((e.code === 'Space' || e.code === 'Enter') && unlocksModal.classList.contains('hidden') && codeModal.classList.contains('hidden')) {
+          e.preventDefault();
+          mainBtn.classList.add('is-pressed');
+          addChaos(1, null, null, '+1');
+        }
+      });
+      window.addEventListener('keyup', (e) => {
+        if (e.code === 'Space' || e.code === 'Enter') {
+          mainBtn.classList.remove('is-pressed');
+        }
+      });
+
+      btnSound.addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+        soundLabel.textContent = soundEnabled ? 'Sound ON' : 'Muted';
+        updateMusicUI();
+      });
+
+      btnTheme.addEventListener('click', toggleTheme);
+
+      btnToggleMusic.addEventListener('click', () => {
+        musicPlaying = !musicPlaying;
+        if (musicPlaying && !soundEnabled) {
+          soundEnabled = true;
+          soundIcon.textContent = '🔊';
+          soundLabel.textContent = 'Sound ON';
+        }
+        updateMusicUI();
+      });
+
+      btnSwitchGenre.addEventListener('click', () => {
+        musicGenre = musicGenre === 'lofi' ? 'rave' : 'lofi';
+        startMusicLoop();
+      });
+
+      btnSwitchChannel.addEventListener('click', () => {
+        runnerChannel = (runnerChannel + 1) % 3;
+        const titles = ['🏃 Subway Brainrot', '🟩 GitHub Green ASMR', '⚙️ VC Burn Press'];
+        runnerChannelTitle.textContent = titles[runnerChannel];
+      });
+
+      btnSpawnInfiniteNow.addEventListener('click', (e) => {
+        addChaos(20, e.clientX, e.clientY, '🚀 +20 SHIPPED!');
+      });
+
+      btnAutoclick.addEventListener('click', () => {
+        if (autoClickerInterval) {
+          clearInterval(autoClickerInterval);
+          autoClickerInterval = null;
+          autoclickLabel.textContent = 'Auto: OFF';
+        } else {
+          autoclickLabel.textContent = 'Auto: ON ⚡';
+          autoClickerInterval = setInterval(() => {
+            addChaos(1, null, null, '+1 ⚡');
+          }, 120);
+        }
+      });
+
+      btnUnlocksModal.addEventListener('click', () => {
+        updateUnlocksModalList();
+        unlocksModal.classList.remove('hidden');
+        unlocksModal.classList.add('flex');
+      });
+
+      const closeUnlocksModal = () => {
+        unlocksModal.classList.add('hidden');
+        unlocksModal.classList.remove('flex');
+      };
+      btnCloseModal.addEventListener('click', closeUnlocksModal);
+      btnCloseModalBottom.addEventListener('click', closeUnlocksModal);
+
+      btnBoost25.addEventListener('click', () => {
+        addChaos(25, null, null, '🚀 +25 BOOST!');
+        updateUnlocksModalList();
+        closeUnlocksModal();
+      });
+
+      // Code & GitHub Deploy Modal
+      btnCodeModal.addEventListener('click', () => {
+        codeModal.classList.remove('hidden');
+        codeModal.classList.add('flex');
+      });
+      const closeCodeModal = () => {
+        codeModal.classList.add('hidden');
+        codeModal.classList.remove('flex');
+      };
+      btnCloseCodeModal.addEventListener('click', closeCodeModal);
+      btnCloseCodeBottom.addEventListener('click', closeCodeModal);
+
+      btnCopyFullHtml.addEventListener('click', () => {
+        const fullSource = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(fullSource).catch(() => {});
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = fullSource;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+        }
+        copyHtmlBtnText.textContent = '✅ Copied Full index.html!';
+        showAchievement('💻', 'CODE COPIED', 'Ready to paste into GitHub / Vercel!');
+        setTimeout(() => {
+          copyHtmlBtnText.textContent = 'Copy Full index.html Code';
+        }, 2800);
+      });
+
+      btnShare.addEventListener('click', () => {
+        const shareText = `🚀 I reached ${chaos} Chaos ($${simulatedMrr.toLocaleString()} fake MRR & ${infiniteLayersUnlocked} Infinite Founder Layers) on Chaos Clicker: Indie Hacker 𝕏 Edition! 💀 Ship your own brainrot: ${window.location.href}`;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(shareText).catch(() => {});
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = shareText;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+        }
+        showAchievement('📋', 'COPIED FOR 𝕏 THREAD', `Shared: ${chaos} Chaos • $${simulatedMrr.toLocaleString()} MRR`);
+      });
+
+      btnReset.addEventListener('click', resetAllChaos);
+
+      window.addEventListener('resize', () => {
+        if (unlockedSet.has('rain')) {
+          rainCanvas.width = window.innerWidth;
+          rainCanvas.height = window.innerHeight;
+        }
+      });
+
+      function masterLoop() {
+        updateBouncers();
+        updateAndDrawSubwayRunner();
+        updateAndDrawRain();
+        drawAudioVisualizer();
+        requestAnimationFrame(masterLoop);
+      }
+
+      window.onload = () => {
+        updateUI();
+        updateUnlocksModalList();
+        requestAnimationFrame(masterLoop);
+      };
+    })();
+  </script>
+</body>
+</html>
